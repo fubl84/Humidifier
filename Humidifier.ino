@@ -16,6 +16,8 @@ int relayFan = 4;                      // Relay 2 Lüfter am Humidifier
 int relayVentilator = 5;               // Relay 3 Lüfter im Gewächshaus
 int relay4 = 6;                        // Wird noch nicht gebraucht
 
+// Test für den Button
+
 // Initialisierung für DHT
 #define DHTPIN 2                      // Welcher Pin wird für das DHT benutzt?
 #define DHTTYPE DHT11                 // Wir haben erstmal "nur" das DHT11
