@@ -9,17 +9,20 @@ long dauer=0;                         // Dauer anlegen für Wasserstand
 long entfernung=0;                    // Entfernung anlegen für Wasserstand
 int maxwater=40;                       // Entfernung Maximaler Wasserstand (mm)
 int minwater=130;                      // Entfernung Minimaler Wasserstand (mm)
-int prozentsatz = 100/(minwater-maxwater);  // Prozentsatz ausrechnen
-int entfernungsprozent = 0;            // Prozent der Befüllung anlegen
-int relayHumidifier = 3;               // Relay 1 Humidifier
-int relayFan = 4;                      // Relay 2 Lüfter am Humidifier 
-int relayVentilator = 5;               // Relay 3 Lüfter im Gewächshaus
-int relay4 = 6;                        // Wird noch nicht gebraucht
+int prozentsatz=100/(minwater-maxwater);  // Prozentsatz ausrechnen
+int entfernungsprozent=0;            // Prozent der Befüllung anlegen
+int relayHumidifier=4;               // PIN Relay 1 Humidifier
+int relayFan=5;                      // PIN Relay 2 Lüfter am Humidifier 
+int relayVentilator=6;               // PIN Relay 3 Lüfter im Gewächshaus
+int relay4=7;                        // PIN Wird noch nicht gebraucht
 
 // Test für den Button
+//standbyState entweder 1 oder 0 (Standby an- oder aus)
+int standbyState=1;
+int buttonPin=2;
 
 // Initialisierung für DHT
-#define DHTPIN 2                      // Welcher Pin wird für das DHT benutzt?
+#define DHTPIN 3                      // Welcher Pin wird für das DHT benutzt?
 #define DHTTYPE DHT11                 // Wir haben erstmal "nur" das DHT11
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -70,6 +73,10 @@ digitalWrite(relayFan, LOW);
 digitalWrite(relayVentilator, LOW);
 digitalWrite(relay4, LOW);            //Unbenutzt
 
+// Button definieren
+pinMode(buttonPin, INPUT);
+attachInterrupt(0,buttonPressed,RISING);
+
 dht.begin();                          //der DHT soll starten
 
 // Wassersensor einrichten
@@ -82,6 +89,8 @@ pinMode(echo, INPUT);
 void loop() {
 
 unsigned long currentTime = millis();           //Zeitzähler wird "gestartet"
+
+// Abfrage, ob Standby gewünscht
 
 // Abfrage, ob Gehäuselüfter ausgeschaltet werden muss
 if (digitalRead(relayVentilator) == HIGH && digitalRead(relayHumidifier) == LOW)
@@ -189,4 +198,17 @@ if (digitalRead(relayVentilator) == LOW)
   }
 }
 
+}
+
+void buttonPressed()
+{
+  if (standbyState == 1)
+  {
+    standbyState=0;
+    //Reset der Zeitzählung noch einfügen, um den 50 Tage-Max Zähler zu umgehen
+  }
+  else
+  { 
+    standbyState=1;
+  }
 }
