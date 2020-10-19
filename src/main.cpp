@@ -821,7 +821,7 @@ void windowAction(bool openclose)
   else
   {
     statusWindow = false;
-    myservo.write(180);
+    myservo.write(0);
     Serial.println("Window closed!");
     tft.fillRoundRect(117, 168, 85, 60, 10, COLOR_OFF);
     tft.drawBitmap(139, 178, window, 40, 40, COLOR_WHITE);
