@@ -46,7 +46,7 @@
 #define FIREBASE_HOST         "humidifieresp32.firebaseio.com"
 #define FIREBASE_AUTH         "F8EsoAhdc016A00AIojgia26BsHCMinJL2hkulwB"
 #define CALIBRATION_FILE      "/TouchCalibration"
-#define REPEAT_CAL            true
+#define REPEAT_CAL            false
 
 //define firebase data objects
 FirebaseData firebaseData;    //firebase data for relais
@@ -63,7 +63,7 @@ Servo myservo;
 TFT_eSPI tft = TFT_eSPI();
  
 //initialize DHT
-#define DHTTYPE DHT11 // TODO change back to 22
+#define DHTTYPE DHT22
 DHT dht(PIN_DHT, DHTTYPE);
 
 //define colors and fonts for display
@@ -304,6 +304,7 @@ void loop()
     if((fanDelay == true) && (currentTime - previousFanDelay) > timerFanDelay)
     {
       changeRelais("Fan", RELAY_FAN, OFF);
+      updateFirebase();
       fanDelay = false;
     }
     else{}
@@ -323,7 +324,7 @@ void loop()
       changeRelais("Ventilator", RELAY_VENTILATOR, OFF);
       updateFirebase();
       finishedHumidifying = true;
-      ventilate = true;
+      ventilate = false;
       previousIdleVentilation = currentTime;
     }
     else{}
