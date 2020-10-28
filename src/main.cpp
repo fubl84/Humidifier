@@ -17,6 +17,7 @@
 /* ****************************************************************************/
 
 #include <Arduino.h>
+#include <time.h>
 #include <Adafruit_I2CDevice.h>
 #include <Adafruit_GFX.h>     // Display
 #include <DHT.h>              // Sensor DHT22
@@ -47,6 +48,11 @@
 #define FIREBASE_AUTH         "F8EsoAhdc016A00AIojgia26BsHCMinJL2hkulwB"
 #define CALIBRATION_FILE      "/TouchCalibration"
 #define REPEAT_CAL            false
+
+//define NTP server
+const char* ntpServer = "pool.ntp.org";
+const long gmtOffset_sec = 3600;
+const int daylightOffset_sec = 0;
 
 //define firebase data objects
 FirebaseData firebaseData;    //firebase data for relais
@@ -240,6 +246,7 @@ unsigned long previousActiveVentilation = 0;
 unsigned long previousFanDelay = 0;
 unsigned long previousSecond = 0;
 unsigned long currentTime;
+int localTime = 0;
 
 void changeRelais(String relaisItem, int PIN, bool onoff);
 void updateFirebase(void);
@@ -257,6 +264,7 @@ void updateFirebaseSensors(void);
 void touchCalibrate(void);
 void touchscreen(void);
 void windowAction(bool openclose);
+void getLocalTime(void);
 
 void setup()
 {
@@ -264,6 +272,8 @@ void setup()
 
   connectWiFi();
 
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  
   initiateFirebase();
 
   initiatePins();
@@ -284,7 +294,7 @@ void loop()
 {
   currentTime = millis();
 
-  touchscreen();
+  //touchscreen();
 
   if((statusStandby == false) || (waterPercentage >= 15))
   {
@@ -355,6 +365,7 @@ void loop()
   updateDisplay();
 
   subscribeFirebase(firebaseData);
+
 }
 
 //////////////////////////////////////////////////
@@ -462,6 +473,8 @@ void changeRelais(String relaisItem, int PIN, bool onoff)
       statusHeatmat = true;
       tft.fillRoundRect(16, 168, 85, 60, 10, COLOR_MID);
       tft.drawBitmap(38, 178, heatmat, 40, 40, COLOR_WHITE);
+      getLocalTime();
+      updateFirebase();
     }
   }
   else if(relaisItem == "Window")
@@ -516,6 +529,7 @@ void updateFirebase(void)
   arr1.set("/[3]", statusHeatmat);
   arr1.set("/[4]", statusWindow);
   arr1.set("/[5]", statusStandby);
+  arr1.set("/[6]", localTime);
   if(Firebase.set(firebaseData, pathRelais, arr1))
   {
     Serial.println("Firebase relais updated!");
@@ -829,6 +843,19 @@ void windowAction(bool openclose)
   }
   updateFirebase();
   
+}
+
+void getLocalTime(void)
+{
+  struct tm timeinfo;
+  if(!getLocalTime(&timeinfo))
+  {
+    Serial.println("Failed to obtain time");
+    return;
+  }
+  else{}
+  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+  localTime = ((timeinfo.tm_hour * 3600) + (timeinfo.tm_min * 60) + (timeinfo.tm_sec));
 }
 
 //////////////////////////////////////////////////
