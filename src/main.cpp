@@ -39,11 +39,11 @@
 #define RELAY_HEATMAT         5
 #define RELAY_REMOTE          17 
 
-#define WIFI_NETWORK          "Hoppler"
-#define WIFI_PASSWORD         "!12121987!09061984!"
+#define WIFI_NETWORK          "********"
+#define WIFI_PASSWORD         "*****"
 #define WIFI_TIMEOUT_MS       20000
-#define FIREBASE_HOST         "humidifieresp32.firebaseio.com"
-#define FIREBASE_AUTH         "F8EsoAhdc016A00AIojgia26BsHCMinJL2hkulwB"
+#define FIREBASE_HOST         "*********"
+#define FIREBASE_AUTH         "********************************"
 
 //define NTP server
 const char* ntpServer = "pool.ntp.org";
